@@ -7,6 +7,7 @@ use std::{
 mod ffmpeg;
 
 const TARGET_VIDEO_LENGTH: f32 = 60f32 * 2f32;
+const DURATION_LEN: usize = "duration=".len();
 
 fn main() {
     let mut args = std::env::args();
@@ -15,23 +16,22 @@ fn main() {
 
     println!("{input_video_path:?} {output_video_path:?}");
 
-    // let duration = video_duration(&input_video_path);
-    // let speed_multiplier = duration / TARGET_VIDEO_LENGTH;
-    //
-    // let fast_video = speed_up(&input_video_path, speed_multiplier);
+    let duration = get_video_duration(&input_video_path);
+    let speed_multiplier = duration / TARGET_VIDEO_LENGTH;
 
-    // ffmpeg::process(fast_video.into(), output_video_path.into());
-    ffmpeg::process(input_video_path.into(), output_video_path.into());
+    let fast_video = speed_up_video(&input_video_path, speed_multiplier);
+    println!("{speed_multiplier}x -> {fast_video}");
+
+    ffmpeg::process(fast_video.into(), output_video_path.into());
 }
 
-fn speed_up(input_video_path: &String, speed_multiplier: f32) -> String {
+fn speed_up_video(input_video_path: &String, speed_multiplier: f32) -> String {
     let output = PathBuf::from(input_video_path);
-    let output = output
-        .with_file_name("temp-speed-video-crab-slave.mp4")
-        .display()
-        .to_string();
+    let output = output.with_file_name("temp-speed-video-crab-slave.mp4");
 
     let _ = fs::remove_file(&output);
+
+    let output = output.display().to_string();
 
     let mut cmd = process::Command::new("ffmpeg")
         .args([
@@ -42,8 +42,8 @@ fn speed_up(input_video_path: &String, speed_multiplier: f32) -> String {
             &format!("setpts=PTS/{speed_multiplier}"),
             &output,
         ])
-        .stderr(process::Stdio::inherit())
         .stdin(process::Stdio::null())
+        .stderr(process::Stdio::inherit())
         .stdout(process::Stdio::inherit())
         .spawn()
         .unwrap();
@@ -53,7 +53,7 @@ fn speed_up(input_video_path: &String, speed_multiplier: f32) -> String {
     output
 }
 
-fn video_duration(input_video_path: &String) -> f32 {
+fn get_video_duration(input_video_path: &String) -> f32 {
     let Output {
         status,
         stdout,
@@ -76,8 +76,6 @@ fn video_duration(input_video_path: &String) -> f32 {
     if !status.success() {
         panic!("{status:?}");
     }
-
-    const DURATION_LEN: usize = "duration=".len();
 
     let stdout = String::from_utf8(stdout).unwrap();
     let stdout = stdout.split("\n").find_map(|l| {
