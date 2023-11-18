@@ -1,30 +1,30 @@
 use std::{
+    fs,
     path::PathBuf,
-    process::{self, Output}, fs,
+    process::{self, Output},
 };
 
 mod ffmpeg;
-// mod mp4;
+
+const TARGET_VIDEO_LENGTH: f32 = 60f32 * 2f32;
 
 fn main() {
     let mut args = std::env::args();
     let input_video_path = args.nth(1).expect("Needs input video path");
-    let output_video_path = args.next().expect("Needs output vide path");
+    let output_video_path = args.next().expect("Needs output video path");
 
     println!("{input_video_path:?} {output_video_path:?}");
 
-    let duration = video_duration(&input_video_path);
-    let speed_multiplier = duration / 60f32;
+    // let duration = video_duration(&input_video_path);
+    // let speed_multiplier = duration / TARGET_VIDEO_LENGTH;
+    //
+    // let fast_video = speed_up(&input_video_path, speed_multiplier);
 
-    let fast_video = speed_up(&input_video_path, speed_multiplier);
-
-    ffmpeg::process(fast_video.into(), output_video_path.into());
-
-    // mp4::speed_up(input_video_path, output_video_path).unwrap();
+    // ffmpeg::process(fast_video.into(), output_video_path.into());
+    ffmpeg::process(input_video_path.into(), output_video_path.into());
 }
 
 fn speed_up(input_video_path: &String, speed_multiplier: f32) -> String {
-    // ffmpeg -i $INPUT_FILE -filter:v "setpts=PTS/$SPEEDUP" $OUTPUT_FILE
     let output = PathBuf::from(input_video_path);
     let output = output
         .with_file_name("temp-speed-video-crab-slave.mp4")

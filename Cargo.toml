@@ -8,5 +8,6 @@ edition = "2021"
 [dependencies]
 mp4 = "0.14.0"
 ndarray = "0.15.6"
+rayon = "1.8.0"
 tinypool = "0.1.0"
 video-rs = { version = "0.5.0", features = [ "ndarray" ] }
