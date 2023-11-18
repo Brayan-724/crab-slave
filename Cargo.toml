@@ -1,0 +1,12 @@
+[package]
+name = "crab-slave"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+mp4 = "0.14.0"
+ndarray = "0.15.6"
+tinypool = "0.1.0"
+video-rs = { version = "0.5.0", features = [ "ndarray" ] }
