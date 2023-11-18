@@ -35,12 +35,12 @@ fn speed_up(input_video_path: &String, speed_multiplier: f32) -> String {
 
     let mut cmd = process::Command::new("ffmpeg")
         .args([
+            "-an",
             "-i",
             input_video_path,
             "-filter:v",
             &format!("setpts=PTS/{speed_multiplier}"),
             &output,
-            "-an"
         ])
         .stderr(process::Stdio::inherit())
         .stdin(process::Stdio::null())
