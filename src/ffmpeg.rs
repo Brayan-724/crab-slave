@@ -18,7 +18,7 @@ pub fn process(input_video_path: PathBuf, output_video_path: PathBuf) {
 
     const MAX_DIFF: usize = 1360 * 720; // My screen resolution
 
-    let duration: Time = Time::from_nth_of_a_second(25);
+    let duration: Time = Time::from_nth_of_a_second(60);
     let (duration_time, duration_time_base) = duration.into_parts();
 
     let position = Time::zero();
