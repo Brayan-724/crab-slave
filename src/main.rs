@@ -6,21 +6,28 @@ use std::{
 
 mod ffmpeg;
 
-const TARGET_VIDEO_LENGTH: f32 = 60f32 * 2f32;
+const TARGET_VIDEO_LENGTH: f32 = 60f32 * 5f32;
 const DURATION_LEN: usize = "duration=".len();
 
 fn main() {
+    let skip_speeder = std::env::var("SKIP_SPEEDER").unwrap_or_default() == "1";
+
     let mut args = std::env::args();
     let input_video_path = args.nth(1).expect("Needs input video path");
     let output_video_path = args.next().expect("Needs output video path");
 
     println!("{input_video_path:?} {output_video_path:?}");
 
-    let duration = get_video_duration(&input_video_path);
-    let speed_multiplier = duration / TARGET_VIDEO_LENGTH;
+    let fast_video = if skip_speeder {
+        input_video_path
+    } else {
+        let duration = get_video_duration(&input_video_path);
+        let speed_multiplier = duration / TARGET_VIDEO_LENGTH;
 
-    let fast_video = speed_up_video(&input_video_path, speed_multiplier);
-    println!("{speed_multiplier}x -> {fast_video}");
+        let fast_video = speed_up_video(&input_video_path, speed_multiplier);
+        println!("{speed_multiplier}x -> {fast_video}");
+        fast_video
+    };
 
     ffmpeg::process(fast_video.into(), output_video_path.into());
 }
