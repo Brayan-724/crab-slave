@@ -6,6 +6,7 @@ use std::{
 
 mod ffmpeg;
 
+// const TARGET_VIDEO_LENGTH: f32 = 60f32 * 2f32;
 const TARGET_VIDEO_LENGTH: f32 = 60f32 * 5f32;
 const DURATION_LEN: usize = "duration=".len();
 
@@ -91,7 +92,8 @@ fn get_video_duration(input_video_path: &String) -> f32 {
         }
 
         let duration = &l[DURATION_LEN..];
-        Some(duration.parse::<f32>().unwrap())
+        println!("Duration = {duration}");
+        duration.parse::<f32>().ok()
     });
 
     stdout.unwrap()
